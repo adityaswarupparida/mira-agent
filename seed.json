@@ -1,0 +1,42 @@
+[
+  {
+    "question": "What are your salon hours/timings?",
+    "answer": "We are open daily from 10 AM to 8 PM."
+  },
+  {
+    "question": "Where is Live Beauty Salon located?",
+    "answer": "We are located at 45 MG Road, Kolkata."
+  },
+  {
+    "question": "What is the price for a hair cut?",
+    "answer": "The regular haircut rates are ₹500 for men and ₹700 for women. Additional services or personalized requests may incur extra charges."
+  },
+  {
+    "question": "What is the price for a hair spa?",
+    "answer": "Our hair spa treatments start at ₹1200 depending on hair length."
+  },
+  {
+    "question": "Do you accept walk-ins?",
+    "answer": "Yes, we accept walk-ins, but we recommend booking in advance."
+  },
+  {
+    "question": "What payment methods do you accept?",
+    "answer": "We accept cash, credit/debit cards, and UPI payments."
+  },
+  {
+    "question": "Do you offer home salon services?",
+    "answer": "Yes, we provide home salon services within 5 km of our salon for select treatments."
+  },
+  {
+    "question": "Do you have separate services for men and women?",
+    "answer": "Yes, we offer dedicated sections and services for both men and women."
+  },
+  {
+    "question": "Is prior appointment necessary for bridal makeup?",
+    "answer": "Yes, bridal makeup sessions should be booked at least one week in advance."
+  },
+  {
+    "question": "Do you provide hair color consultation?",
+    "answer": "Absolutely! Our stylists offer free hair color consultations to help you choose the perfect shade."
+  }
+]

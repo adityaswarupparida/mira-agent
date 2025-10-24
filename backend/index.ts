@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import prisma from "./db";
 import { request_status } from "./db/generated/prisma/enums";
 import { PublisherService } from "./services/publisher";
@@ -7,13 +8,27 @@ import { asyncHandleHelpRequestTimeout } from "./handler";
 const PORT = 3000;
 const app = express();
 app.use(express.json());
+app.use(cors());
 const svc = new PublisherService();
 
 app.get("/api/help-requests", async (req, res) => {
-    // Get resolved requests
+    // Get resolved/unresolved requests
     const requests = await prisma.help_requests.findMany({
         where: {
-            status: request_status.Resolved
+            status: { in: [request_status.Resolved, request_status.Unresolved] }
+        }
+    });
+
+    res.json({
+        requests
+    });
+});
+
+app.get("/api/help-requests/pending", async (req, res) => {
+    // Get pending requests
+    const requests = await prisma.help_requests.findMany({
+        where: {
+            status: request_status.Pending
         }
     });
 

@@ -1,12 +1,13 @@
 import express from "express";
 import prisma from "./db";
 import { request_status } from "./db/generated/prisma/enums";
-import { RoomService } from "./room";
+import { PublisherService } from "./services/publisher";
+import { asyncHandleHelpRequestTimeout } from "./handler";
 
 const PORT = 3000;
 const app = express();
 app.use(express.json());
-const svc = new RoomService();
+const svc = new PublisherService();
 
 app.get("/api/help-requests", async (req, res) => {
     // Get resolved requests
@@ -33,6 +34,9 @@ app.post("/api/help-requests", async (req, res) => {
             status: request_status.Pending
         }
     });
+
+    // running in background
+    asyncHandleHelpRequestTimeout(help_request.id);
     console.log(help_request.id);
     res.json({
         id: help_request.id
@@ -43,14 +47,14 @@ app.patch("/api/help-requests/:id", async (req, res) => {
     const id = parseInt(req.params.id);
     const { answer, responded } = req.body;
     
-    const data: { answer: string, responded: boolean, status: request_status } = {
-        answer: "",
+    const data: { response: string, responded: boolean, status: request_status } = {
+        response: "",
         responded: false,
         status: request_status.Unresolved
     };
 
     if (responded) {
-        data.answer = answer;
+        data.response = answer;
         data.responded = true;
         data.status = request_status.Resolved
 
@@ -63,7 +67,7 @@ app.patch("/api/help-requests/:id", async (req, res) => {
         if (!help_request) return;
 
         // notify agent
-        await svc.notifyAgent(help_request.source, help_request.created_by, answer);
+        await svc.publishData(`Channel:${help_request.created_by}`, answer);
     }
 
     await prisma.help_requests.update({
@@ -72,6 +76,11 @@ app.patch("/api/help-requests/:id", async (req, res) => {
         },
         data: data
     });
+
+    res.json({
+        id: id,
+        responded: responded
+    })
 });
 
 app.listen(PORT, () => {

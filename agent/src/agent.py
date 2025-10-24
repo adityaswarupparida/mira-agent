@@ -1,6 +1,5 @@
 import logging
 import httpx
-import json
 import os
 
 from dotenv import load_dotenv
@@ -19,8 +18,9 @@ from livekit.plugins import noise_cancellation, silero
 from livekit.plugins.turn_detector.multilingual import MultilingualModel
 from livekit.agents import function_tool, RunContext
 from livekit.agents import ChatContext, ChatMessage
-from livekit import rtc
 from kb import KnowledgeBase
+from sub import Subscriber
+
 logger = logging.getLogger("agent")
 
 load_dotenv(".env.local")
@@ -34,7 +34,7 @@ class Assistant(Agent):
             You warmly greet callers and assist them with accurate information about salon services, appointments, prices, stylists, and policies based on your current knowledge. 
 
             If the user asks a question and you have information, answer it briefly and ask if they need anything else and then pause, for user to respond.  
-            If you are uncertain or the question is outside your knowledge, say "Let me check with my supervisor and get back to you" and trigger a help request to a human supervisor. 
+            IMPORTANT: If you are uncertain or the question is outside your knowledge, say "Let me check with my supervisor and get back to you" and trigger a help request to a human supervisor. 
             If the user says "No", "That's all", "I'm good", "Thanks", or similar conclusive responses, then thank them warmly and wish them well (e.g., "Thank you for calling! Have a wonderful day ahead!")
             If the user's response is not conclusive or unclear or ambiguous, politely ask clarifying questions (e.g., "I didn't quite catch that. Could you please repeat?" or "What would you like to know about?")
             DO NOT raise help requests for: casual greetings, thank you messages, "no" responses, or end-of-conversation signals
@@ -47,8 +47,9 @@ class Assistant(Agent):
         self.kb = None
         self.room = ctx.room
         self.agent_identity = None
+        self.sub = Subscriber()
 
-        self.room.on("data_received", self.on_data_received)
+        # self.room.on("data_received", self.on_data_received)
 
     async def on_enter(self) -> None:
         self.kb = await KnowledgeBase.create()
@@ -57,27 +58,37 @@ class Assistant(Agent):
             "Hello. I am Mira from Live Beauty Salon. How can I help you?",
             allow_interruptions=False,
         )
-        self.agent_identity = str(self.room.local_participant.sid) if self.room.local_participant.sid else None
+        self.agent_identity = str(self.room.local_participant.sid) if self.room.local_participant else None
+        await self.start_listening(f"Channel:{self.agent_identity}")
+        
+        # logging.debug(self.agent_identity)
+        # logging.debug(self.room.local_participant)
 
 
-    async def on_user_turn_completed(self, turn_ctx, new_message):
+    async def on_user_turn_completed(self, turn_ctx: ChatContext, new_message: ChatMessage):
         rag_content = await self.kb.search_knowledge(new_message.text_content)
-        logging.debug(rag_content)
+        # logging.debug(rag_content)
 
         turn_ctx.add_message(
             role="assistant", 
             content=f"""Additional information relevant to the user's next message: {rag_content}.
-            If you don't find any answer to user's query in above message, then say politely to user: {"Let me check with my supervisor and get back to you."} 
+            IMPORTANT: If you don't find any answer to user's query in above message, then say politely to user: {"Let me check with my supervisor and get back to you."} 
             and raise help request to supervisor without informing about this to user and also ask if any other help you could provide in meantime
             """
         )
 
 
-    def on_data_received(self, data_packet: rtc.DataPacket):
-        payload = json.loads(data_packet.data.decode('utf-8'))      
-        logging.info(payload)
-        response = str(payload)
-        self.kb.add_knowledge([response])
+    # async def on_data_received(self, data_packet: rtc.DataPacket):
+    #     payload = json.loads(data_packet.data.decode('utf-8'))      
+    #     logging.info(payload)
+    #     response = str(payload)
+    async def start_listening(self, channel: str):
+        pubsub = await self.sub.get_pubsub(channel)
+        async for message in pubsub.listen():
+            if message["type"] == "message":
+                decoded_message = message['data'].decode('utf-8')
+                logging.info(f"{decoded_message}")
+                await self.kb.add_knowledge([decoded_message])
 
 
     @function_tool
@@ -88,7 +99,7 @@ class Assistant(Agent):
             query: The question asked by user about Salon like services offered, timings, etc.
         """
     
-        logger.info(f"Raising help requests for {query}")
+        logging.info(f"Raising help requests for {query}")
         data = {
             "query": query,
             "room": self.room.name,
@@ -96,8 +107,13 @@ class Assistant(Agent):
         }
         logging.debug(data)
     
-        async with httpx.AsyncClient() as client:
-            await client.post(f"{os.getenv('BACKEND_URL')}/api/help-requests", json=data)
+        try:
+            async with httpx.AsyncClient() as client:
+                await client.post(f"{os.getenv('BACKEND_URL')}/api/help-requests", json=data)
+                return
+
+        except httpx.ReadTimeout:
+            logging.error("Backend took too long to respond while raising help request.")
 
 
 
@@ -120,7 +136,7 @@ async def entrypoint(ctx: JobContext):
         turn_detection=MultilingualModel(),
         vad=ctx.proc.userdata["vad"],
 
-        preemptive_generation=True,
+        # preemptive_generation=True,
     )
 
     usage_collector = metrics.UsageCollector()

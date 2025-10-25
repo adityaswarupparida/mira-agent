@@ -11,6 +11,7 @@ git clone https://github.com/adityaswarupparida/mira-agent
 cd mira-agent
 ```
 2. Run Dependencies via Docker
+Before running backend or agent, start the required services using Docker:
 ```bash
 # PostgreSQL
 docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=mysecretpassword postgres

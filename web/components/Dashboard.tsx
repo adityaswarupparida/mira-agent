@@ -15,8 +15,7 @@ export const Dashboard = ({ name, type }: { name: string, type: string }) => {
         else if (type == "past")
             reqs = await getPastRequests();
 
-        if (reqs.length > 0)
-            setRequests(reqs);
+        setRequests(reqs);
         
     }
     

@@ -49,7 +49,6 @@ class Assistant(Agent):
         self.agent_identity = None
         self.sub = Subscriber()
 
-        # self.room.on("data_received", self.on_data_received)
 
     async def on_enter(self) -> None:
         self.kb = await KnowledgeBase.create()
@@ -61,8 +60,6 @@ class Assistant(Agent):
         self.agent_identity = str(self.room.local_participant.sid) if self.room.local_participant else None
         await self.start_listening(f"Channel:{self.agent_identity}")
         
-        # logging.debug(self.agent_identity)
-        # logging.debug(self.room.local_participant)
 
 
     async def on_user_turn_completed(self, turn_ctx: ChatContext, new_message: ChatMessage):
@@ -78,10 +75,6 @@ class Assistant(Agent):
         )
 
 
-    # async def on_data_received(self, data_packet: rtc.DataPacket):
-    #     payload = json.loads(data_packet.data.decode('utf-8'))      
-    #     logging.info(payload)
-    #     response = str(payload)
     async def start_listening(self, channel: str):
         pubsub = await self.sub.get_pubsub(channel)
         async for message in pubsub.listen():

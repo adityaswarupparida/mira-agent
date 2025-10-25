@@ -1,6 +1,6 @@
 import prisma from "./db";
 
-const delay = 5 * 60 * 1000 // 1 min
+const delay = 5 * 60 * 1000 // 5 mins
 
 const promisifiedSetTimeout = async (delay: number): Promise<void> => {
     return new Promise(resolve => setTimeout(resolve, delay));

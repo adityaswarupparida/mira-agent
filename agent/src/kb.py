@@ -7,6 +7,7 @@ from groq import Groq
 load_dotenv(".env.local")
 
 COLLECTION_NAME = "salon_knowledge_base"
+LOCAL_MEMORY_FILE = "learned_answers.json"
 
 class KnowledgeBase:
     def __init__(self, collection_name=COLLECTION_NAME):
@@ -35,6 +36,7 @@ class KnowledgeBase:
             collection_name=self.collection,
             documents=docs
         )
+        self.save_knowledge(docs)
 
     async def retrieve(self, text: str, limit: int = 5):
         search_texts = await self.q_client.query(
@@ -49,3 +51,19 @@ class KnowledgeBase:
 
         context = "\n".join(d.document for d in docs)
         return context
+    
+    def save_knowledge(self, docs: list[str]):
+        data = {"Learned Answers": []}
+        if os.path.exists(LOCAL_MEMORY_FILE):
+            try:
+                with open(LOCAL_MEMORY_FILE, "r") as f:
+                    data = json.load(f)
+            except Exception:
+                data = {"Learned Answers": []}
+
+        # Append new docs
+        data["Learned Answers"].extend(docs)
+
+        # Save back
+        with open(LOCAL_MEMORY_FILE, "w") as f:
+            json.dump(data, f, indent=2)

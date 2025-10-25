@@ -1,4 +1,3 @@
-import { Card } from "@/components/Card";
 import { Dashboard } from "@/components/Dashboard";
 
 export default function Home() {

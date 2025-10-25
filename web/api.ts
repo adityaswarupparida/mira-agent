@@ -20,13 +20,13 @@ type Requests = {
 
 export const getPendingRequests = async (): Promise<HelpRequests[]> => {
     const response = await axios.get<Requests>(`${BACKEND_URL}/api/help-requests/pending`);
-    console.log(response.data)
-    return response.data.requests;
+    // console.log(response.data)
+    return response.data.requests.sort((a, b) => b.id - a.id);
 }
 
 export const getPastRequests = async (): Promise<HelpRequests[]> => {
     const response = await axios.get<Requests>(`${BACKEND_URL}/api/help-requests`);
-    return response.data.requests;
+    return response.data.requests.sort((a, b) => b.updated_at.localeCompare(a.updated_at));
 }
 
 export const answerRequests = async (id: number, answer: string) => {

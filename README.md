@@ -4,5 +4,5 @@
 4. Send response to agent from backend - Done
 5. Implement timeout - Done
 6. Test e2e with agent and backend - Done
-7. Connect and finish the Frontend
+7. Connect and finish the Frontend - Done
 8. Test e2e with frontend

@@ -1,6 +1,7 @@
 "use client"
 import { answerRequests, HelpRequests } from "@/api";
 import { useState } from "react"
+import { Badge } from "./Badge";
 
 export const Card = (props: { request: HelpRequests, selected: boolean }) => {
     const [textarea, setTextarea] = useState("");
@@ -8,7 +9,7 @@ export const Card = (props: { request: HelpRequests, selected: boolean }) => {
 
     const onSubmit = async () => {
         setLoading(true)
-        await answerRequests(1, textarea);
+        await answerRequests(props.request.id, textarea);
         setTextarea("");
         setLoading(false)
     }
@@ -24,21 +25,31 @@ export const Card = (props: { request: HelpRequests, selected: boolean }) => {
             </div>
             <div className="flex items-center justify-between px-2 mb-2 w-full">
                 <div className="flex justify-start items-center pl-2 text-wrap">{props.request.request}</div>
-                <div className="flex justify-center items-center px-2">{props.request.status}</div>
+                <div className="flex justify-center items-center px-2">
+                    <Badge status={`${props.request.status}`} />
+                </div>
             </div>
             
         {props.selected && 
             <div className="w-full">
                 { props.request.status == "Pending" &&  
-                <div className="w-full h-16 px-2 mb-2 flex items-center justify-start">
-                    <textarea className="w-4/5 h-full border rounded"
+                <div className="w-full h-16 px-4 mb-2 flex items-center justify-start">
+                    <textarea className="w-4/5 p-2 h-full border rounded"
+                        onClick={(e) => e.stopPropagation()}
                         onChange={(e) => setTextarea(e.currentTarget.value)}
                     ></textarea>
                 </div> }
-                <div className="flex items-center justify-between px-2 mb-2 w-full">
+                { props.request.status == "Resolved" &&  
+                <div className="w-full px-4 mb-2 flex items-center justify-start text-wrap">
+                     {props.request.response}
+                </div> }
+                <div className="flex items-center justify-between px-4 mb-2 w-full">
                     { props.request.status == "Pending" &&  
                     <button className="bg-green-500 disabled:bg-green-500/60 disabled:text-black/60 disabled:cursor-not-allowed px-4 py-1 rounded cursor-pointer"
-                        onClick={onSubmit}
+                        onClick={async (e) => {
+                            e.stopPropagation()
+                            await onSubmit()
+                        }}
                         disabled={textarea.trim() === ""}
                     >Respond</button>}
                     { props.request.status != "Pending" &&  

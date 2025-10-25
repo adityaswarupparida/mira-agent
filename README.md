@@ -10,7 +10,19 @@
 git clone https://github.com/adityaswarupparida/mira-agent
 cd mira-agent
 ```
-2. Backend
+2. Run Dependencies via Docker
+```bash
+# PostgreSQL
+docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=mysecretpassword postgres
+
+# Redis
+docker run -d -p 6379:6379 redis
+
+# Qdrant
+docker run -d -p 6333:6333 qdrant/qdrant
+```
+
+3. Backend
 ```bash
 cd backend
 bun install
@@ -28,14 +40,14 @@ Finally, start the backend:
 bun index.ts 
 ```
 
-3. Frontend
+4. Frontend
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-4. Agent
+5. Agent
 
 Install dependencies in a virtual environment:
 ```bash

@@ -12,9 +12,7 @@ LOCAL_MEMORY_FILE = "learned_answers.json"
 class KnowledgeBase:
     def __init__(self, collection_name=COLLECTION_NAME):
         self.collection = collection_name
-        self.q_client = AsyncQdrantClient(host="localhost", port=6333)
-        self.rag_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-        
+        self.q_client = AsyncQdrantClient(host="localhost", port=6333)        
 
     @classmethod
     async def create(cls, collection_name=COLLECTION_NAME):

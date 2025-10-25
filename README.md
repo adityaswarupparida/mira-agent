@@ -5,12 +5,12 @@
 ---
 
 ## Steps to setup:
-1. Clone the Repository
+### 1. Clone the Repository
 ```bash
 git clone https://github.com/adityaswarupparida/mira-agent
 cd mira-agent
 ```
-2. Run Dependencies via Docker
+### 2. Run Dependencies via Docker
 Before running backend or agent, start the required services using Docker:
 ```bash
 # PostgreSQL
@@ -23,7 +23,7 @@ docker run -d -p 6379:6379 redis
 docker run -d -p 6333:6333 qdrant/qdrant
 ```
 
-3. Backend
+### 3. Backend
 ```bash
 cd backend
 bun install
@@ -41,14 +41,14 @@ Finally, start the backend:
 bun index.ts 
 ```
 
-4. Frontend
+### 4. Frontend
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-5. Agent
+### 5. Agent
 
 Install dependencies in a virtual environment:
 ```bash

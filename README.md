@@ -2,6 +2,19 @@
 ## Architecture
 <img width="1532" height="769" alt="Screenshot 2025-10-25 at 4 21 57 PM" src="https://github.com/user-attachments/assets/d15a7923-0b60-4689-8779-500b2059f988" />
 
+## Key Features
+
+- Voice-based AI agent built using LiveKit and Python that handles incoming customer calls.
+ 
+- Answers queries about salon services, pricing, availability, and more using a dynamic knowledge base.
+
+- Escalates unknown questions to a human supervisor in real time when the knowledge base lacks an answer.
+
+- Instantly relays supervisor responses back to the caller, ensuring smooth and continuous conversation flow.
+
+- Automatically learns from every supervisor interaction by saving new answers to its knowledge base for future calls.
+
+- End-to-end automation that reduces manual workload while improving response accuracy over time.
 ---
 
 ## Steps to setup:

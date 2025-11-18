@@ -22,9 +22,6 @@ export const Dashboard = ({ name, type }: { name: string, type: string }) => {
     useEffect(() => {
         (async () => await getRequests())();
         
-        // return () => { 
-        //     // requests = [] 
-        // }
     }, []);
     return (
         <div className="bg-white rounded shadow-xl p-2 flex flex-col gap-2 h-full justify-center items-center overflow-y-auto">

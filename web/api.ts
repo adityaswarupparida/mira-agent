@@ -20,7 +20,6 @@ type Requests = {
 
 export const getPendingRequests = async (): Promise<HelpRequests[]> => {
     const response = await axios.get<Requests>(`${BACKEND_URL}/api/help-requests/pending`);
-    // console.log(response.data)
     return response.data.requests.sort((a, b) => b.id - a.id);
 }
 

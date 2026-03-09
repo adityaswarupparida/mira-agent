@@ -2,6 +2,9 @@
 ## Architecture
 <img width="1532" height="769" alt="Screenshot 2025-10-25 at 4 21 57 PM" src="https://github.com/user-attachments/assets/d15a7923-0b60-4689-8779-500b2059f988" />
 
+## Demo
+https://drive.google.com/file/d/1Kp5tQyJ16P37tzAVJHERxrgndYbyLCA3/view?usp=sharing
+
 ## Key Features
 
 - **Voice-based AI agent** built using **LiveKit and Python** that handles incoming customer calls.
